@@ -1,0 +1,12 @@
+interval_minutes: 10
+notify_on_first_run: false
+display_mode: "31days"  # 7days or 31days
+headless: false
+
+# Optional: filter by court name (regex). If empty, all courts are monitored.
+# Fetching now always covers every Ota-ward tennis court; this regex is the
+# only thing that controls which of them actually trigger notifications.
+include_court_regex: "下丸子公園庭球場"
+
+urls:
+  top: "https://www.yoyaku.city.ota.tokyo.jp/eshisetsu/menu/Welcome.cgi"
