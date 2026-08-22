@@ -218,11 +218,12 @@ def check_once(config: Dict, webhook_url: str, timeout: int, email_config: Dict 
 
     state = load_state()
     key = "ota-hard-tennis"
+    is_first_run = key not in state
 
     current = fetch_ota_tennis_slots(config)
     old_slots = set(state.get(key, []))
 
-    if not old_slots and not config.get("notify_on_first_run", False):
+    if is_first_run and not config.get("notify_on_first_run", False):
         new_slots = set()
     else:
         new_slots = current - old_slots
