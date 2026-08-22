@@ -2,8 +2,13 @@ name: Scheduled Check
 
 on:
   schedule:
-    # Every 5 minutes. Public repo = unlimited free GitHub-hosted Actions minutes.
-    - cron: '*/5 * * * *'
+    # Low-frequency fallback only. Primary 5-min triggering comes from an
+    # external cron service calling the workflow_dispatch API below, since
+    # GitHub's own `schedule:` is unreliable at high frequency (throttled/
+    # delayed under load). This just guards against the external trigger
+    # (or its token) failing silently. Offset from :00 to avoid the
+    # top-of-hour high-load window.
+    - cron: '17 * * * *'
   workflow_dispatch: {}
 
 permissions:
