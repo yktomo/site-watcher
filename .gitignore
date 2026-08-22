@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 readme.md
+CLAUDE.md
 run_check.log
