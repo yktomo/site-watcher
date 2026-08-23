@@ -6,6 +6,7 @@ import sys
 import time
 import smtplib
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
@@ -20,6 +21,16 @@ from playwright.sync_api import sync_playwright
 
 BASE_DIR = Path(__file__).resolve().parent
 STATE_FILE = BASE_DIR / "state.json"
+
+# Site is only reachable 5:00-1:59 JST (down 2:00-4:59 JST). Checking outside
+# this window just wastes a request, whichever trigger (local scheduler,
+# GitHub Actions schedule, external cron) fired the check.
+SERVICE_DOWN_HOURS = (2, 3, 4)
+
+
+def is_service_available(now: datetime = None) -> bool:
+    now = now or datetime.now(ZoneInfo("Asia/Tokyo"))
+    return now.hour not in SERVICE_DOWN_HOURS
 
 
 def log(message: str) -> None:
@@ -215,6 +226,10 @@ def check_once(config: Dict, webhook_url: str, timeout: int, email_config: Dict 
         email_config = {"enabled": False}
     if line_config is None:
         line_config = {"enabled": False}
+
+    if not is_service_available():
+        log("site is outside its service hours (02:00-04:59 JST); skipping check")
+        return
 
     state = load_state()
     key = "ota-hard-tennis"
